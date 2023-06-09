@@ -1,5 +1,6 @@
 package com.rubyboat.daily;
 
+import com.rubyboat.daily.items.MeshPannerItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
@@ -9,10 +10,10 @@ import net.minecraft.util.Identifier;
 
 public class Main implements ModInitializer {
     public static String MODID = "rubydaily";
-    public Item MeshPannerItem = new Item(new FabricItemSettings());
+    public MeshPannerItem MESH_PANNER_ITEM = new MeshPannerItem(new FabricItemSettings());
 
     @Override
     public void onInitialize() {
-        Registry.register(Registries.ITEM,  new Identifier(MODID, "mesh_panner"), MeshPannerItem);
+        Registry.register(Registries.ITEM,  new Identifier(MODID, "mesh_panner"), MESH_PANNER_ITEM);
     }
 }
