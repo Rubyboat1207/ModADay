@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "madman",
+  "version": "${version}",
+  "name": "MadMan",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/rudy/MadMan"
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/madman/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.rubyboat.madman.client.MadManClient"
+    ],
+    "main": [
+      "com.rubyboat.madman.MadMan",
+      "com.rubyboat.daily.Main"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  },
+  "mixins": [
+    "madman.mixins.json"
+  ]
+}
