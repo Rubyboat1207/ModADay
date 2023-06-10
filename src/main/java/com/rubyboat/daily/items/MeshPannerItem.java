@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
@@ -62,12 +63,14 @@ public class MeshPannerItem extends Item {
                 var state = world.getBlockState(p.getRight().getBlockPos());
                 if (p.getLeft().getFluidState(state).isIn(FluidTags.WATER)) {
 
-                    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(serverWorld);
+                    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(serverWorld)
+                            .add(LootContextParameters.ORIGIN, p.getRight().getPos())
+                            .add(LootContextParameters.THIS_ENTITY, player);
 
 
                     var lootManager = serverWorld.getServer().getLootManager();
                     var table = lootManager.getLootTable(MeshPannerItem.WATER_LOOT_ID);
-                    var loot = table.generateLoot(builder.build(LootContextTypes.EMPTY), new Random().nextLong());
+                    var loot = table.generateLoot(builder.build(LootContextTypes.CHEST), new Random().nextLong());
 
                     for (ItemStack item : loot) {
                         player.getInventory().insertStack(item);
