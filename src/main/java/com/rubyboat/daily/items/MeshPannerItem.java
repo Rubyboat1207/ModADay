@@ -115,9 +115,4 @@ public class MeshPannerItem extends Item {
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.BRUSH;
     }
-
-    @Override
-    public int getDay() {
-        return 1;
-    }
 }
