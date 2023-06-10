@@ -1,36 +1,39 @@
 package com.rubyboat.daily.items;
 
 import com.rubyboat.daily.Main;
+import com.rubyboat.madman.MadMan;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
 public class MeshPannerItem extends Item {
-    static final Identifier WATER_LOOT_ID = new Identifier(Main.MODID, "panning/water.json");
+    static final Identifier WATER_LOOT_ID = new Identifier(Main.MODID, "panning/water");
     public MeshPannerItem(Settings settings) {
         super(settings);
     }
@@ -48,34 +51,49 @@ public class MeshPannerItem extends Item {
 
         ServerWorld serverWorld = (ServerWorld) world;
         if(user instanceof PlayerEntity player) {
-            if(remainingUseTicks != 0) {
+            if(remainingUseTicks > 1) {
                 if(raycastToFluid(world, player).isEmpty()) {
                     player.stopUsingItem();
                 }
+                return;
             }
+
             raycastToFluid(world, player).ifPresent((p) -> {
                 var state = world.getBlockState(p.getRight().getBlockPos());
-                if(p.getLeft().getFluidState(state).isIn(FluidTags.WATER)) {
+                if (p.getLeft().getFluidState(state).isIn(FluidTags.WATER)) {
 
-                    LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(
-                        serverWorld)
-                        .add(LootContextParameters.ORIGIN, user.getPos())
-                        .luck(player.getLuck())
-                        .add(LootContextParameters.THIS_ENTITY, player)
-                        .build(LootContextTypes.GENERIC);
+                    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(serverWorld);
+
 
                     var lootManager = serverWorld.getServer().getLootManager();
                     var table = lootManager.getLootTable(MeshPannerItem.WATER_LOOT_ID);
-                    var loot = table.generateLoot(lootContextParameterSet, new Random().nextLong());
+                    var loot = table.generateLoot(builder.build(LootContextTypes.EMPTY), new Random().nextLong());
 
-                    for(ItemStack item : loot) {
+                    for (ItemStack item : loot) {
                         player.getInventory().insertStack(item);
                     }
+                    player.stopUsingItem();
                 }
             });
         }
-
         super.usageTick(world, user, stack, remainingUseTicks);
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        if(raycastToFluid(world, user).isPresent()) {
+            user.setCurrentHand(hand);
+            return TypedActionResult.consume(user.getStackInHand(hand));
+        }
+        return TypedActionResult.fail(user.getStackInHand(hand));
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        if(raycastToFluid(context.getWorld(), context.getPlayer()).isPresent()) {
+            return ActionResult.CONSUME;
+        }
+        return ActionResult.FAIL;
     }
 
     public Optional<Pair<FluidBlock, BlockHitResult>> raycastToFluid(World world, PlayerEntity user) {
@@ -86,7 +104,6 @@ public class MeshPannerItem extends Item {
 
         BlockState state = world.getBlockState(hitResult.getBlockPos());
         Block block = state.getBlock();
-        user.sendMessage(block.getName(), true);
 
         if(block instanceof FluidBlock fluid) {
             return Optional.of(new Pair<>(fluid, hitResult));
@@ -95,16 +112,12 @@ public class MeshPannerItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if(raycastToFluid(world, user).isPresent()) {
-            return TypedActionResult.consume(user.getStackInHand(hand));
-        }
-
-        return super.use(world, user, hand);
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BRUSH;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BRUSH;
+    public int getDay() {
+        return 1;
     }
 }

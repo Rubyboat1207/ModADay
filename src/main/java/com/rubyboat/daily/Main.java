@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 public class Main implements ModInitializer {
     public static String MODID = "rubydaily";
-    public MeshPannerItem MESH_PANNER_ITEM = new MeshPannerItem(new FabricItemSettings());
+    public MeshPannerItem MESH_PANNER_ITEM = new MeshPannerItem(new FabricItemSettings().maxCount(1));
 
     @Override
     public void onInitialize() {
