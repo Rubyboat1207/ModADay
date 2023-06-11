@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 
 @Debug(export = true)
 @Mixin(ActiveTargetGoal.class)
-public class ActiveTargetGoalMixin extends TrackTargetGoal {
+public abstract class ActiveTargetGoalMixin extends TrackTargetGoal {
     public ActiveTargetGoalMixin(MobEntity mob, boolean checkVisibility) {
         super(mob, checkVisibility);
     }
@@ -53,10 +53,5 @@ public class ActiveTargetGoalMixin extends TrackTargetGoal {
             return mypred;
         }
         return predicate.and(mypred);
-    }
-
-    @Override
-    public boolean canStart() {
-        return false;
     }
 }
