@@ -4,6 +4,7 @@
   "package": "com.rubyboat.daily.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ActiveTargetGoalMixin"
   ],
   "client": [
   ],

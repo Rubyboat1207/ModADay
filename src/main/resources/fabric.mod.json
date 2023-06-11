@@ -26,6 +26,8 @@
     "minecraft": "${minecraft_version}"
   },
   "mixins": [
+    "rubydaily.mixins.json",
     "madman.mixins.json"
-  ]
+  ],
+  "accessWidener" : "rubydaily.accesswidener"
 }

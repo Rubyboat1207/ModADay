@@ -42,7 +42,7 @@ public class Manneken extends Item {
 
         cur.forEach(user::equipStack);
 
-        return super.use(world, user, hand);
+        return TypedActionResult.success(stack);
     }
 
     public HashMap<EquipmentSlot, ItemStack> getCurrentNBTStack(ItemStack stack) {
